@@ -1,0 +1,86 @@
+import java.util.Arrays;
+
+public class FloydAlgorithm {
+    private static final int INF = Integer.MAX_VALUE, nV = 4;
+
+    public static void main(String[] args) {
+    	int[][] graph = {
+                {0, 2, 4, INF, INF},
+                {3, 0, 7, 5, INF},
+                {INF, 1, 0, 3, INF},
+                {INF, 8, INF, 0, 1},
+                {INF, INF, 6, 4, 0}
+            };
+
+        int[] optimalPath = findOptimalPath(graph);
+        int totalDistance = calculateTotalDistance(graph, optimalPath);
+
+        System.out.println("Optimal Path: " + Arrays.toString(optimalPath));
+        System.out.println("Total Distance: " + totalDistance);
+    }
+
+    private static int[] findOptimalPath(int[][] graph) {
+        int n = graph.length;
+        int[][] dist = new int[n][n];
+
+        // Initialize dist[][] matrix with the values from the graph
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(graph[i], 0, dist[i], 0, n);
+        }
+
+        // Compute all-pairs shortest path using Floyd-Warshall algorithm
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] != INF && dist[k][j] != INF && dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+        printMatrix(dist);
+
+        // Find the optimal path starting from node 0
+        boolean[] visited = new boolean[n];
+        int[] path = new int[n];
+        int pathIndex = 0;
+        visited[0] = true;
+        path[pathIndex++] = 0;
+
+        for (int i = 1; i < n; i++) {
+            int nextNode = -1;
+            int minDistance = INF;
+
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && dist[path[pathIndex - 1]][j] < minDistance) {
+                    nextNode = j;
+                    minDistance = dist[path[pathIndex - 1]][j];
+                }
+            }
+
+            visited[nextNode] = true;
+            path[pathIndex++] = nextNode;
+        }
+
+        return path;
+    }
+
+    private static int calculateTotalDistance(int[][] graph, int[] path) {
+        int totalDistance = 0;
+        for (int i = 0; i < path.length - 1; i++) {
+            totalDistance += graph[path[i]][path[i + 1]];
+        }
+        return totalDistance;
+    }
+    static void printMatrix(int matrix[][]) {
+        for (int i = 0; i < nV; ++i) {
+          for (int j = 0; j < nV; ++j) {
+            if (matrix[i][j] == INF)
+              System.out.print("INF ");
+            else
+              System.out.print(matrix[i][j] + "  ");
+          }
+          System.out.println();
+        }
+      }
+}
