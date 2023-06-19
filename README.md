@@ -24,4 +24,6 @@ The main goals are to ensure:
      such as fuel consumption. 
      
 Data model :
+
+
 ![Screenshot 2023-06-20 003652](https://github.com/Ainsyah/AlgoPortfolio/assets/92832476/1c5c3c37-35b6-441f-a921-6b4fbd58c373)
