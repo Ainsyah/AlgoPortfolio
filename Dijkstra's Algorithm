@@ -1,0 +1,94 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
+
+class Node implements Comparable<Node> {
+    int id;
+    int distance;
+
+    public Node(int id, int distance) {
+        this.id = id;
+        this.distance = distance;
+    }
+
+    public int compareTo(Node other) {
+        return Integer.compare(this.distance, other.distance);
+    }
+}
+
+public class DijkstraAlgorithm {
+    private int[][] graph;
+    private int numNodes;
+
+    public DijkstraAlgorithm(int[][] graph) {
+        this.graph = graph;
+        this.numNodes = graph.length;
+    }
+
+    public void findOptimalPath() {
+        boolean[] visited = new boolean[numNodes];
+        int[] distance = new int[numNodes];
+        int[] previous = new int[numNodes];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        Arrays.fill(previous, -1);
+
+        distance[0] = 0;
+
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+        queue.add(new Node(0, 0));
+
+        while (!queue.isEmpty()) {
+            Node current = queue.poll();
+            int currentNode = current.id;
+
+            if (visited[currentNode]) {
+                continue;
+            }
+
+            visited[currentNode] = true;
+
+            for (int neighbor = 0; neighbor < numNodes; neighbor++) {
+                int edgeWeight = graph[currentNode][neighbor];
+
+                if (edgeWeight > 0 && !visited[neighbor]) {
+                    int newDistance = distance[currentNode] + edgeWeight;
+
+                    if (newDistance < distance[neighbor]) {
+                        distance[neighbor] = newDistance;
+                        previous[neighbor] = currentNode;
+                        queue.add(new Node(neighbor, newDistance));
+                    }
+                }
+            }
+        }
+
+        // Print the optimal path
+        List<Integer> path = new ArrayList<>();
+        int currentNode = numNodes - 1;
+        while (currentNode != -1) {
+            path.add(0, currentNode);
+            currentNode = previous[currentNode];
+        }
+
+        System.out.println("Optimal Path: " + path);
+
+        // Calculate total distance
+        int totalDistance = distance[numNodes - 1];
+        System.out.println("Total Distance: " + totalDistance);
+    }
+
+    public static void main(String[] args) {
+    	int[][] graph = {
+    			
+                {0, 2, 4, 0, 0},
+                {3, 0, 7, 5, 0},
+                {0, 1, 0, 3, 0},
+                {0, 8, 0, 0, 1},
+                {0, 0, 6, 4, 0}
+            };
+
+        DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
+        dijkstra.findOptimalPath();
+    }
+}
